@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import timeEquivalentsData from "./time-equivalents.json";
+import messagesData from "./messages.json";
 
 // Storage keys
 const STORAGE_KEY_DAILY = "game-time-daily";
@@ -128,6 +129,54 @@ function getTimeEquivalent(hours: number): string | null {
     Math.random() * selectedCategory.activities.length
   );
   return selectedCategory.activities[randomIndex];
+}
+
+// Message selection functions
+function getRandomMessage(messages: string[]): string {
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
+function getSessionPrompt(sessionMinutes: number): string | null {
+  const prompts = messagesData.sessionPrompts;
+  if (sessionMinutes >= 180) return getRandomMessage(prompts["180min"]);
+  if (sessionMinutes >= 120) return getRandomMessage(prompts["120min"]);
+  if (sessionMinutes >= 90) return getRandomMessage(prompts["90min"]);
+  if (sessionMinutes >= 60) return getRandomMessage(prompts["60min"]);
+  if (sessionMinutes >= 30) return getRandomMessage(prompts["30min"]);
+  return null;
+}
+
+function getDailyReflection(
+  todayTotal: number,
+  weekAverage: number
+): string | null {
+  if (todayTotal === 0 || weekAverage === 0) return null;
+
+  const reflections = messagesData.dailyReflections;
+  const ratio = todayTotal / weekAverage;
+
+  if (ratio < 0.8) return getRandomMessage(reflections.underAverage);
+  if (ratio <= 1.2) return getRandomMessage(reflections.atAverage);
+  return getRandomMessage(reflections.overAverage);
+}
+
+function getWeeklyInsight(weeklyHours: number): string | null {
+  const insights = messagesData.weeklyInsights;
+  if (weeklyHours < 7) return getRandomMessage(insights.low);
+  if (weeklyHours < 20) return getRandomMessage(insights.moderate);
+  return getRandomMessage(insights.high);
+}
+
+function getAlternativeActivity(): string {
+  return getRandomMessage(messagesData.alternatives);
+}
+
+function getWellbeingTip(): string {
+  return getRandomMessage(messagesData.wellbeing);
+}
+
+function getGoalPrompt(): string {
+  return getRandomMessage(messagesData.goalPrompts);
 }
 
 // Date utilities
@@ -305,16 +354,55 @@ export default function Home() {
   ).length;
   const hasMultipleWeekEntries = weekDaysWithEntries > 1;
 
-  // Calculate overall hours for time equivalent
-  const overallHours = Math.floor(overallTotal / 36000); // Convert tenths to hours
+  // Calculate hours for messaging
+  const sessionMinutes = Math.floor(sessionTime / 600); // tenths to minutes
+  const weeklyHours = Math.floor(weekTotal / 36000);
+  const overallHours = Math.floor(overallTotal / 36000);
+
+  // Time equivalent (stable per hour threshold)
   const timeEquivalent = useMemo(
     () => getTimeEquivalent(overallHours),
     [overallHours]
   );
 
-  // Comparison calculations
+  // Session prompt (changes at 30-min intervals)
+  const sessionPromptKey = Math.floor(sessionMinutes / 30);
+  const sessionPrompt = useMemo(
+    () => (isTracking ? getSessionPrompt(sessionMinutes) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sessionPromptKey, isTracking]
+  );
+
+  // Daily reflection (stable for the session)
+  const dailyReflection = useMemo(
+    () =>
+      hasMultipleWeekEntries
+        ? getDailyReflection(todayTotal, weekAverage)
+        : null,
+    [todayTotal, weekAverage, hasMultipleWeekEntries]
+  );
+
+  // Weekly insight (stable for the session)
+  const weeklyInsight = useMemo(
+    () => (weeklyHours >= 5 ? getWeeklyInsight(weeklyHours) : null),
+    [weeklyHours]
+  );
+
+  // Alternative activity suggestion
+  const alternativeActivity = useMemo(() => getAlternativeActivity(), []);
+
+  // Wellbeing tip (shown with session prompts)
+  const wellbeingTip = useMemo(
+    () => (sessionMinutes >= 60 ? getWellbeingTip() : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sessionPromptKey]
+  );
+
+  // Goal prompt
+  const goalPrompt = useMemo(() => getGoalPrompt(), []);
+
+  // Comparison calculations (for stats display only)
   const todayVsYesterday = todayTotal - yesterdayTotal;
-  const todayVsWeekAverage = todayTotal - weekAverage;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white font-sans dark:bg-black">
@@ -427,41 +515,64 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Time Equivalent Message */}
-        {timeEquivalent && overallHours >= 10 && (
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="text-sm text-zinc-700 dark:text-zinc-300">
-              <span className="font-medium">
-                With {overallHours} hours of gaming time, you could have:
-              </span>
-              <div className="mt-1.5 text-sm font-semibold text-zinc-900 dark:text-zinc-100 sm:mt-2 sm:text-base">
-                {timeEquivalent}
-              </div>
+        {/* Session Prompt - shown during active sessions at milestones */}
+        {isTracking && sessionPrompt && (
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-6 dark:border-blue-900 dark:bg-blue-950">
+            <div className="space-y-3 text-sm text-blue-900 dark:text-blue-100">
+              <p>{sessionPrompt}</p>
+              {wellbeingTip && (
+                <p className="text-blue-700 dark:text-blue-300">
+                  {wellbeingTip}
+                </p>
+              )}
+              <p className="font-medium">Suggestion: {alternativeActivity}</p>
             </div>
           </div>
         )}
 
-        {/* Comparison Message */}
-        {todayTotal > 0 && weekAverage > 0 && hasMultipleWeekEntries && (
+        {/* Daily Reflection - shown when not tracking */}
+        {!isTracking && dailyReflection && (
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
+              <p>{dailyReflection}</p>
+              <p className="text-zinc-500 dark:text-zinc-400">{goalPrompt}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Weekly Insight - shown when not tracking and enough data */}
+        {!isTracking && weeklyInsight && hasMultipleWeekEntries && (
           <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="text-sm text-zinc-700 dark:text-zinc-300">
-              {todayVsWeekAverage >= 0 ? (
-                <span>
-                  You&apos;ve played{" "}
-                  <span className="font-semibold text-red-600 dark:text-red-400">
-                    {formatTimeShort(Math.abs(todayVsWeekAverage))} more
-                  </span>{" "}
-                  today than your weekly average. Consider taking a break.
-                </span>
-              ) : (
-                <span>
-                  You&apos;re{" "}
-                  <span className="font-semibold text-green-600 dark:text-green-400">
-                    {formatTimeShort(Math.abs(todayVsWeekAverage))} under
-                  </span>{" "}
-                  your weekly average today. Good balance!
-                </span>
-              )}
+              <p>{weeklyInsight}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Time Equivalent - reframed as opportunity, not guilt */}
+        {!isTracking && timeEquivalent && overallHours >= 10 && (
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="text-sm text-zinc-700 dark:text-zinc-300">
+              <p className="mb-2">
+                Your total gaming time ({overallHours} hours) is equivalent to
+                the time needed to:
+              </p>
+              <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                {timeEquivalent}
+              </p>
+              <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+                Would you like to redirect some future gaming time toward a new
+                goal?
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Escalation Message - for very high usage */}
+        {!isTracking && weeklyHours >= 35 && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 sm:p-6 dark:border-amber-900 dark:bg-amber-950">
+            <div className="text-sm text-amber-900 dark:text-amber-100">
+              <p>{messagesData.escalation.veryHigh}</p>
             </div>
           </div>
         )}

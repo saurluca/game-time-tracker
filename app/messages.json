@@ -1,0 +1,89 @@
+{
+  "sessionPrompts": {
+    "30min": [
+      "You've been playing for 30 minutes. If you'd like to take a break, this is a natural stopping point.",
+      "30 minutes in. How are you feeling? Energized, neutral, or tired?",
+      "Half an hour of gaming. If you stop now, you could go for a short walk or stretch."
+    ],
+    "60min": [
+      "You've reached 1 hour. If you want to stop here, what would you do next? A walk, a snack, or something creative?",
+      "1 hour played. Stopping now gives you time for other things you enjoy today.",
+      "60 minutes in. If you're feeling drained, taking a break now can help your focus and mood."
+    ],
+    "90min": [
+      "You've played for 90 minutes. Is this session going as you planned, or is the game pulling you in longer than intended?",
+      "90 minutes is a solid session. If you stop now, you could read a chapter, call a friend, or work on a hobby.",
+      "1.5 hours in. Taking a break now can help your sleep and energy later today."
+    ],
+    "120min": [
+      "You've been playing for 2 hours. This is a good point to check in: do you still want to continue, or is now a good time to stop?",
+      "2 hours is a long session. If you stop now, you'll have more energy for other activities today.",
+      "120 minutes in. How are you feeling? If you're tired or restless, a break might help."
+    ],
+    "180min": [
+      "You've played for 3 hours. Long sessions can affect your sleep and mood. If you want to stop, what would you do instead?",
+      "3 hours is a substantial session. If you'd like to wrap up, consider going outside or doing something social.",
+      "180 minutes in. Taking a longer break now can help you feel better tomorrow."
+    ]
+  },
+  "dailyReflections": {
+    "underAverage": [
+      "You're under your daily average today. Nice balance!",
+      "Today's playtime is lower than usual. You're making space for other things.",
+      "Good pacing today. You're staying within your typical range."
+    ],
+    "atAverage": [
+      "Today's playtime is about average for you. Is this the amount you want to maintain?",
+      "You're at your typical daily level. If you want to adjust this, you can set a goal for tomorrow."
+    ],
+    "overAverage": [
+      "Today's playtime is higher than your average. Is this intentional, or did the game pull you in more than planned?",
+      "You've played more than usual today. If you want to balance this out, consider a shorter session tomorrow.",
+      "Higher playtime today. If you stop now, you can use the rest of the day for something else you enjoy."
+    ]
+  },
+  "weeklyInsights": {
+    "low": [
+      "Your gaming this week has been moderate. You're leaving plenty of time for other activities.",
+      "Balanced week so far. You're keeping gaming as one part of your life, not the whole thing."
+    ],
+    "moderate": [
+      "This week's gaming is at a typical level. If you want to redirect some time to another goal, consider setting a daily limit.",
+      "Moderate gaming this week. If there's a skill or hobby you've been wanting to explore, you could swap one session for it."
+    ],
+    "high": [
+      "Your gaming time this week is higher than average. If you'd like to reduce it, try setting a specific limit for the next few days.",
+      "High gaming week. Some people find it helpful to plan one alternative activity before each gaming session.",
+      "This week's playtime is substantial. If you want to make room for other goals, consider which sessions you could skip or shorten."
+    ]
+  },
+  "alternatives": [
+    "Go for a 15-minute walk outside",
+    "Read 10 pages of a book",
+    "Message or call a friend",
+    "Do a quick workout or stretch",
+    "Work on a hobby or creative project",
+    "Prepare a healthy snack or meal",
+    "Tidy up your space for 10 minutes",
+    "Practice a skill you're learning",
+    "Watch one episode of a show",
+    "Write in a journal or plan tomorrow"
+  ],
+  "wellbeing": [
+    "Taking breaks from screens can improve your sleep quality and mood.",
+    "Short breaks during long sessions help maintain focus and reduce eye strain.",
+    "Time away from gaming often leads to better energy and social connections.",
+    "Regular breaks are linked to better emotional well-being.",
+    "Stepping away now can help you feel more refreshed tomorrow."
+  ],
+  "goalPrompts": [
+    "If you stop now, what will you do next?",
+    "Would you like to set a time limit for your next session?",
+    "Is there something else you've been wanting to do today?",
+    "What's one thing you could do in the next 30 minutes instead?"
+  ],
+  "escalation": {
+    "veryHigh": "Your gaming time has been very high recently. If you feel your gaming is becoming hard to control, or affecting your sleep, mood, work, or relationships, consider talking to someone you trust or a professional. This is just a check-in—you're in control of your choices."
+  }
+}
+
