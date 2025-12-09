@@ -1,0 +1,107 @@
+[
+  {
+    "hours": 10,
+    "activities": [
+      "Read one full-length novel (~300 pages)",
+      "Complete a short Udemy/Skillshare course",
+      "Walk about 48 kilometers",
+      "Meditate daily for 20 minutes for a month",
+      "Do 10 workout sessions at the gym",
+      "Learn and the basics of a foreign language",
+      "Complete a basic first aid certification"
+    ]
+  },
+  {
+    "hours": 25,
+    "activities": [
+      "Read 2-3 full-length novels",
+      "Complete a substantial online course with projects",
+      "Learn to hold basic guitar chords and strum patterns",
+      "From 0 to running a 5K without stopping (Couch to 5K program)",
+      "Order food in a foreign language",
+      "Complete a beginner photography course and practice",
+      "Learn basic cooking skills and 15+ recipes confidently",
+      "Finish a large LEGO set or complex puzzle",
+      "Complete a personal budgeting and finance course",
+      "Volunteer at a local charity for several weekends"
+    ]
+  },
+  {
+    "hours": 50,
+    "activities": [
+      "Read 5-6 full-length books",
+      "Complete an intro programming course (basics)",
+      "Learn to play 3-5 simple songs on guitar",
+      "Train for and complete a 10K run",
+      "Learn basic conversational phrases in an easy language",
+      "Build your first simple website from scratch",
+      "Complete a CPR and emergency response certification",
+      "Learn to draw faces and basic figures",
+      "Master 30+ recipes and basic cooking techniques",
+      "Complete a substantial home improvement project"
+    ]
+  },
+  {
+    "hours": 100,
+    "activities": [
+      "Read 10-12 full-length books",
+      "Learn programming fundamentals and build small projects",
+      "Play guitar at beginner-intermediate level",
+      "Train for and complete a half marathon",
+      "Hold basic conversations in Spanish or French",
+      "Build a functional web application",
+      "Learn intermediate photography and edit photos",
+      "Complete a significant fitness transformation",
+      "Learn to swim confidently in all strokes",
+      "Write the first draft of a short novel (50k words)",
+      "Start your own bussines and earn you first euro"
+    ]
+  },
+  {
+    "hours": 250,
+    "activities": [
+      "Read 25-30 full-length books",
+      "Become job-ready in a new programming language",
+      "Play guitar confidently and learn music theory",
+      "Train for and complete a full marathon",
+      "Reach conversational fluency in Spanish/French",
+      "Build several complete software projects",
+      "Create a substantial art portfolio",
+      "Achieve a major fitness milestone (e.g., 100kg squat)",
+      "Learn intermediate piano and play classical pieces",
+      "Write and edit a complete novel manuscript",
+      "Complete your Bachelor's thesis"
+    ]
+  },
+  {
+    "hours": 500,
+    "activities": [
+      "Read 50-60 full-length books",
+      "Become proficient in programming and land a junior job",
+      "Play guitar at intermediate-advanced level",
+      "Complete an Ironman 70.3 triathlon",
+      "Reach solid conversational ability in Mandarin/Arabic",
+      "Build a portfolio of professional-quality applications",
+      "Develop strong artistic skills in your chosen medium",
+      "Achieve advanced fitness (e.g., sub-4hr marathon)",
+      "Learn piano to play complex pieces confidently",
+      "Write, edit, and publish a novel"
+    ]
+  },
+  {
+    "hours": 1000,
+    "activities": [
+      "Read 100-120 full-length books",
+      "Become a competent mid-level software developer",
+      "Play guitar at advanced level and perform live",
+      "Complete a full Ironman triathlon",
+      "Approach fluency in a difficult language",
+      "Build and launch multiple successful applications",
+      "Develop professional-level artistic abilities",
+      "Achieve elite amateur athletic performance",
+      "Reach advanced piano proficiency",
+      "Complete the first two years of a Bachelors degree"
+    ]
+  }
+]
+
