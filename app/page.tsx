@@ -5,6 +5,11 @@ import timeEquivalentsData from "./time-equivalents.json";
 // Storage keys
 const STORAGE_KEY_DAILY = "game-time-daily";
 const STORAGE_KEY_OVERALL = "game-time-overall";
+const STORAGE_KEY_SESSION_START = "game-time-session-start";
+
+// Constants
+const MAX_SESSION_HOURS = 24;
+const MAX_SESSION_TENTHS = MAX_SESSION_HOURS * 60 * 60 * 10; // 24 hours in tenths
 
 // Data structures
 interface DailyTotals {
@@ -32,6 +37,29 @@ function getOverallTotal(): number {
 function saveOverallTotal(total: number): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY_OVERALL, total.toString());
+}
+
+// Session start timestamp utilities
+function getSessionStart(): number | null {
+  if (typeof window === "undefined") return null;
+  const stored = localStorage.getItem(STORAGE_KEY_SESSION_START);
+  return stored ? parseInt(stored, 10) : null;
+}
+
+function saveSessionStart(timestamp: number): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY_SESSION_START, timestamp.toString());
+}
+
+function clearSessionStart(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(STORAGE_KEY_SESSION_START);
+}
+
+function calculateElapsedTenths(startTimestamp: number): number {
+  const now = Date.now();
+  const elapsedMs = now - startTimestamp;
+  return Math.floor(elapsedMs / 100); // Convert to tenths of seconds
 }
 
 function getDateString(date: Date = new Date()): string {
@@ -161,32 +189,57 @@ export default function Home() {
   const [isTracking, setIsTracking] = useState(false);
   const [dailyTotals, setDailyTotals] = useState<DailyTotals>({});
   const [overallTotal, setOverallTotal] = useState(0);
-  const sessionTimeRef = useRef(0);
+  const sessionStartRef = useRef<number | null>(null);
 
   // Load data from localStorage after mount to avoid hydration mismatch
-  // Using useLayoutEffect to sync with external store (localStorage) before paint
   useEffect(() => {
     const loadedDailyTotals = getDailyTotals();
     const loadedOverallTotal = getOverallTotal();
-    if (Object.keys(loadedDailyTotals).length > 0 || loadedOverallTotal > 0) {
-      // Batch state updates to minimize renders
-      requestAnimationFrame(() => {
+    const savedSessionStart = getSessionStart();
+
+    // Batch state updates to minimize renders
+    requestAnimationFrame(() => {
+      if (Object.keys(loadedDailyTotals).length > 0 || loadedOverallTotal > 0) {
         setDailyTotals(loadedDailyTotals);
         setOverallTotal(loadedOverallTotal);
-      });
-    }
+      }
+
+      // Restore active session if exists
+      if (savedSessionStart) {
+        const elapsed = calculateElapsedTenths(savedSessionStart);
+
+        // Auto-discard sessions longer than 24 hours
+        if (elapsed > MAX_SESSION_TENTHS) {
+          clearSessionStart();
+          return;
+        }
+
+        sessionStartRef.current = savedSessionStart;
+        setSessionTime(elapsed);
+        setIsTracking(true);
+      }
+    });
   }, []);
 
-  // Timer effect
+  // Timer effect - updates display based on start timestamp
   useEffect(() => {
-    if (!isTracking) return;
+    if (!isTracking || !sessionStartRef.current) return;
 
     const intervalId = setInterval(() => {
-      setSessionTime((prev) => {
-        const newTime = prev + 1;
-        sessionTimeRef.current = newTime;
-        return newTime;
-      });
+      if (sessionStartRef.current) {
+        const elapsed = calculateElapsedTenths(sessionStartRef.current);
+
+        // Auto-discard if session exceeds 24 hours
+        if (elapsed > MAX_SESSION_TENTHS) {
+          clearSessionStart();
+          sessionStartRef.current = null;
+          setIsTracking(false);
+          setSessionTime(0);
+          return;
+        }
+
+        setSessionTime(elapsed);
+      }
     }, 100);
 
     return () => clearInterval(intervalId);
@@ -195,32 +248,48 @@ export default function Home() {
   function handleTimer() {
     if (isTracking) {
       // Stop tracking and save session
-      const timeToSave = sessionTimeRef.current;
-      if (timeToSave > 0) {
-        const today = getDateString();
+      if (sessionStartRef.current) {
+        const timeToSave = calculateElapsedTenths(sessionStartRef.current);
 
-        setDailyTotals((prevTotals) => {
-          const newDailyTotals = {
-            ...prevTotals,
-            [today]: (prevTotals[today] || 0) + timeToSave,
-          };
-          saveDailyTotals(newDailyTotals);
-          return newDailyTotals;
-        });
+        // Only save if within 24-hour limit
+        if (timeToSave > 0 && timeToSave <= MAX_SESSION_TENTHS) {
+          const today = getDateString();
 
-        setOverallTotal((prevTotal) => {
-          const newOverallTotal = prevTotal + timeToSave;
-          saveOverallTotal(newOverallTotal);
-          return newOverallTotal;
-        });
+          setDailyTotals((prevTotals) => {
+            const newDailyTotals = {
+              ...prevTotals,
+              [today]: (prevTotals[today] || 0) + timeToSave,
+            };
+            saveDailyTotals(newDailyTotals);
+            return newDailyTotals;
+          });
+
+          setOverallTotal((prevTotal) => {
+            const newOverallTotal = prevTotal + timeToSave;
+            saveOverallTotal(newOverallTotal);
+            return newOverallTotal;
+          });
+        }
       }
 
+      clearSessionStart();
+      sessionStartRef.current = null;
       setIsTracking(false);
       setSessionTime(0);
-      sessionTimeRef.current = 0;
     } else {
+      // Start new session with timestamp
+      const now = Date.now();
+      sessionStartRef.current = now;
+      saveSessionStart(now);
       setIsTracking(true);
     }
+  }
+
+  function handleDiscardSession() {
+    clearSessionStart();
+    sessionStartRef.current = null;
+    setIsTracking(false);
+    setSessionTime(0);
   }
 
   const todayTotal = calculateTodayTotal(dailyTotals);
@@ -229,9 +298,12 @@ export default function Home() {
   const weekAverage = calculateWeekAverage(dailyTotals);
   const overallAverage = calculateOverallAverage(dailyTotals);
 
-  // Check if there are entries in the current week
+  // Check if there are multiple days with entries this week (not just today)
   const weekDates = getDatesInWeek();
-  const hasWeekEntries = weekDates.some((date) => dailyTotals[date] > 0);
+  const weekDaysWithEntries = weekDates.filter(
+    (date) => dailyTotals[date] > 0
+  ).length;
+  const hasMultipleWeekEntries = weekDaysWithEntries > 1;
 
   // Calculate overall hours for time equivalent
   const overallHours = Math.floor(overallTotal / 36000); // Convert tenths to hours
@@ -270,12 +342,22 @@ export default function Home() {
                 {formatTime(sessionTime)}
               </div>
             </div>
-            <button
-              onClick={handleTimer}
-              className="w-full rounded-lg border border-black bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:border-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto sm:px-8"
-            >
-              {isTracking ? "Stop Session" : "Start Session"}
-            </button>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={handleTimer}
+                className="w-full rounded-lg border border-black bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:border-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto sm:px-8"
+              >
+                {isTracking ? "Stop Session" : "Start Session"}
+              </button>
+              {isTracking && (
+                <button
+                  onClick={handleDiscardSession}
+                  className="w-full rounded-lg border border-zinc-300 bg-transparent px-6 py-3 text-sm font-medium text-zinc-600 transition-colors hover:border-red-500 hover:text-red-600 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-red-500 dark:hover:text-red-400 sm:w-auto sm:px-8"
+                >
+                  Discard Session
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -360,7 +442,7 @@ export default function Home() {
         )}
 
         {/* Comparison Message */}
-        {todayTotal > 0 && weekAverage > 0 && hasWeekEntries && (
+        {todayTotal > 0 && weekAverage > 0 && hasMultipleWeekEntries && (
           <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="text-sm text-zinc-700 dark:text-zinc-300">
               {todayVsWeekAverage >= 0 ? (
