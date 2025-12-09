@@ -318,13 +318,13 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white font-sans dark:bg-black">
-      <main className="flex w-full max-w-4xl flex-col gap-12 px-6 py-16 sm:px-8 md:px-12 lg:px-16">
+      <main className="flex w-full max-w-4xl flex-col gap-8 px-4 py-8 sm:gap-12 sm:px-8 sm:py-16 md:px-12 lg:px-16">
         {/* Header */}
-        <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-semibold tracking-tight text-black dark:text-white sm:text-5xl">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-white sm:text-4xl md:text-5xl">
             Game Time Tracker
           </h1>
-          <p className="text-base text-zinc-600 dark:text-zinc-400 sm:text-lg">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 sm:text-base md:text-lg">
             Track your gaming sessions and stay mindful of your time.
           </p>
         </div>
@@ -336,23 +336,23 @@ export default function Home() {
               Current Session
             </h2>
           </div>
-          <div className="rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="mb-6 text-center">
-              <div className="text-6xl font-mono font-semibold tracking-tight text-black dark:text-white sm:text-7xl md:text-8xl">
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-8 dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="mb-4 sm:mb-6 text-center">
+              <div className="text-4xl font-mono font-semibold tracking-tight text-black dark:text-white xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
                 {formatTime(sessionTime)}
               </div>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
               <button
                 onClick={handleTimer}
-                className="w-full rounded-lg border border-black bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:border-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto sm:px-8"
+                className="w-full rounded-lg border border-black bg-black px-6 py-3.5 text-sm font-medium text-white transition-colors active:bg-zinc-700 hover:bg-zinc-800 dark:border-white dark:bg-white dark:text-black dark:active:bg-zinc-300 dark:hover:bg-zinc-200 sm:w-auto sm:px-8 sm:py-3"
               >
                 {isTracking ? "Stop Session" : "Start Session"}
               </button>
               {isTracking && (
                 <button
                   onClick={handleDiscardSession}
-                  className="w-full rounded-lg border border-zinc-300 bg-transparent px-6 py-3 text-sm font-medium text-zinc-600 transition-colors hover:border-red-500 hover:text-red-600 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-red-500 dark:hover:text-red-400 sm:w-auto sm:px-8"
+                  className="w-full rounded-lg border border-zinc-300 bg-transparent px-6 py-3.5 text-sm font-medium text-zinc-600 transition-colors active:border-red-600 active:text-red-700 hover:border-red-500 hover:text-red-600 dark:border-zinc-700 dark:text-zinc-400 dark:active:border-red-600 dark:active:text-red-500 dark:hover:border-red-500 dark:hover:text-red-400 sm:w-auto sm:px-8 sm:py-3"
                 >
                   Discard Session
                 </button>
@@ -362,14 +362,14 @@ export default function Home() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           {/* Today */}
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Today
             </div>
             <div
-              className="mb-2 text-3xl font-semibold tracking-tight text-black dark:text-white"
+              className="mb-1 text-2xl font-semibold tracking-tight text-black dark:text-white sm:text-3xl"
               suppressHydrationWarning
             >
               {formatTimeHoursMinutes(todayTotal)}
@@ -391,12 +391,12 @@ export default function Home() {
           </div>
 
           {/* This Week */}
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               This Week
             </div>
             <div
-              className="mb-2 text-3xl font-semibold tracking-tight text-black dark:text-white"
+              className="mb-1 text-2xl font-semibold tracking-tight text-black dark:text-white sm:text-3xl"
               suppressHydrationWarning
             >
               {formatTimeHoursMinutes(weekTotal)}
@@ -409,12 +409,12 @@ export default function Home() {
           </div>
 
           {/* Overall */}
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Overall
             </div>
             <div
-              className="mb-2 text-3xl font-semibold tracking-tight text-black dark:text-white"
+              className="mb-1 text-2xl font-semibold tracking-tight text-black dark:text-white sm:text-3xl"
               suppressHydrationWarning
             >
               {formatTimeHoursMinutes(overallTotal)}
@@ -429,12 +429,12 @@ export default function Home() {
 
         {/* Time Equivalent Message */}
         {timeEquivalent && overallHours >= 10 && (
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="text-sm text-zinc-700 dark:text-zinc-300">
               <span className="font-medium">
                 With {overallHours} hours of gaming time, you could have:
               </span>
-              <div className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-100">
+              <div className="mt-1.5 text-sm font-semibold text-zinc-900 dark:text-zinc-100 sm:mt-2 sm:text-base">
                 {timeEquivalent}
               </div>
             </div>
@@ -443,7 +443,7 @@ export default function Home() {
 
         {/* Comparison Message */}
         {todayTotal > 0 && weekAverage > 0 && hasMultipleWeekEntries && (
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="text-sm text-zinc-700 dark:text-zinc-300">
               {todayVsWeekAverage >= 0 ? (
                 <span>
